@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Run this checkout's vp with the Node version pinned in package.json, without a global Vite+.
+# `fork/vp i` installs dependencies with pnpm, since vp itself comes from node_modules.
+set -euo pipefail
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+node_version=$(jq -r .engines.node "$root/package.json")
+fnm list 2>/dev/null | grep -q "v$node_version" || fnm install "$node_version" >&2
+
+if [ "${1:-}" = i ] || [ "${1:-}" = install ]; then
+  cd "$root"
+  # pnpm comes from Corepack, which switches to the version in packageManager.
+  exec fnm exec --using="$node_version" pnpm install --frozen-lockfile
+fi
+if [ ! -x "$root/node_modules/.bin/vp" ]; then
+  echo "Dependencies are missing. Run fork/vp i first." >&2
+  exit 1
+fi
+exec fnm exec --using="$node_version" "$root/node_modules/.bin/vp" "$@"
