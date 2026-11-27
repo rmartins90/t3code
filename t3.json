@@ -4,13 +4,13 @@
   "scripts": [
     {
       "name": "Dev",
-      "command": "vp run dev",
+      "command": "fork/vp run dev",
       "icon": "play",
       "stopOnSettle": true
     },
     {
       "name": "Setup Worktree",
-      "command": "node scripts/setup-worktree.ts",
+      "command": "fork/vp i",
       "icon": "configure",
       "runOnWorktreeCreate": true
     }
